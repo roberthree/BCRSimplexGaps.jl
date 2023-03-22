@@ -1,0 +1,36 @@
+name: ExampleScript
+on: workflow_dispatch
+jobs:
+  example:
+    name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - 'nightly'
+        os:
+          - ubuntu-latest
+        arch:
+          - x64
+          - x86
+    steps:
+      - uses: actions/checkout@v2
+      - uses: julia-actions/setup-julia@v1
+        with:
+          version: ${{ matrix.version }}
+          arch: ${{ matrix.arch }}
+      - uses: julia-actions/cache@v1
+      - uses: julia-actions/julia-buildpkg@v1
+      - name: Run example script defined in README.md
+        run: |
+          using Pkg
+          Pkg.add(url = "https://github.com/roberthree/BCRSimplexGaps.jl.git")
+
+          using BCRSimplexGaps
+
+          d, s, l = (23, 22, 3)
+          result = BCRSimplexGaps.compute_simplex_gap(d, s, l; verbose = false)
+
+          result.gap
+        shell: julia {0}
