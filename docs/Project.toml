@@ -1,0 +1,3 @@
+[deps]
+BCRSimplexGaps = "816a52eb-2c09-4c43-9238-cfe450cf25a4"
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
