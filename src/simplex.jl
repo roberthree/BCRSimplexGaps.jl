@@ -6,9 +6,9 @@ include("BCRSimplexGaps.jl")
 
 simplex_parameters = [
     (d, s, l)
-    for d in [40]#, 500]
+    for d in 3:10#[40]#, 500]
     for l in 3:3
-    for s in max(l, 30):40
+    for s in 20:20#max(l, 30):40
     # for d in max(s, 500):500
 ]
 
@@ -24,7 +24,7 @@ result = DataFrame(
 
 @showprogress for (d, s, l) in simplex_parameters
     printstyled("d = $(d), s = $(s), l = $(l)\n"; color = :red)
-    gap = BCRSimplexGaps.compute_gap(d, s; max_level = l)
+    gap = BCRSimplexGaps.compute_gap(d, s, l)
     push!(result, [d, s, l, gap.s_max, gap.s_opt, gap.gap, gap.time])
 end
 

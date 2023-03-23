@@ -4,20 +4,20 @@ using Combinatorics
 using JuMP
 using HiGHS
 
-function simplex_numbers(d::Int, s::Int; max_level::Int = d)
+function simplex_numbers(d::Int, s::Int, l::Int = d)
     [
         p .- ones(Int, d + 1)
         for p in partitions(s + d + 1, d + 1)
-        if sum(p .> 1) <= max_level + 1
+        if sum(p .> 1) <= l + 1
     ]
 end
 
-function simplex_instance(d::Int, s::Int; max_level::Int = d)
-    @assert 0 <= max_level <= d
-    n = max_level < d ? max_level + 2 : d + 1
+function simplex_instance(d::Int, s::Int, l::Int = d)
+    @assert 0 <= l <= d
+    n = l < d ? l + 2 : d + 1
 
     sn = Dict(
-        o => simplex_numbers(n - 1, s + o; max_level)
+        o => simplex_numbers(n - 1, s + o, l)
         for o in [0, 1]
     )
     sn_union = Iterators.flatten((sn[0], sn[1]))
@@ -35,7 +35,7 @@ function simplex_instance(d::Int, s::Int; max_level::Int = d)
         for k in 0:sum(p)
             indices = findall(==(k), p)
             for i in indices[2:end]
-                factor = i < max_level + 2 ? 1 : (d - max_level)
+                factor = i < l + 2 ? 1 : (d - l)
                 @constraint(model, y[p, i] == factor * y[p, indices[1]])
             end
         end
@@ -65,8 +65,8 @@ function simplex_instance(d::Int, s::Int; max_level::Int = d)
     model, sn, y
 end
 
-function compute_gap(d::Int, s::Int; max_level::Int = d)
-    model, sn, y = BCRSimplexGaps.simplex_instance(d, s; max_level)
+function compute_gap(d::Int, s::Int, l::Int = d)
+    model, sn, y = BCRSimplexGaps.simplex_instance(d, s, l)
     # set_silent(model)
     optimize!(model)
     s_max = s * d / (d + 1)
