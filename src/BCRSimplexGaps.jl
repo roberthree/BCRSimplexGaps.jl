@@ -42,18 +42,18 @@ function simplex_instance(d::Int, s::Int, l::Int = d)
     end
 
     # L1-embedding
-    for p₁ in sn[1], i in 1:sum(p₁ .> 0)
-        i == n || p₁[i] > p₁[i + 1] || continue
+    for p_1 in sn[1], i in 1:sum(p_1 .> 0)
+        i == n || p_1[i] > p_1[i + 1] || continue
         
-        p₀ = copy(p₁)
-        p₀[i] -= 1
+        p_0 = copy(p_1)
+        p_0[i] -= 1
 
         r = @variable(model, [1:n])
 
         for j in 1:n
             @constraints(model, begin
-                +(y[p₀, j] - y[p₁, j]) <= r[j]
-                -(y[p₀, j] - y[p₁, j]) <= r[j]
+                +(y[p_0, j] - y[p_1, j]) <= r[j]
+                -(y[p_0, j] - y[p_1, j]) <= r[j]
             end)
         end
 
