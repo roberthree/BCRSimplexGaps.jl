@@ -40,7 +40,7 @@ function simplex_instance(d::Int, s::Int, l::Int = d)
     @variable(model, y[sn_union, 1:n])
 
     # r(v, w)_i
-    @variable(model, r[sn_edges, 1:n])
+    @variable(model, z[sn_edges, 1:n])
 
     for p in sn_union
         # 0-centric
@@ -60,22 +60,22 @@ function simplex_instance(d::Int, s::Int, l::Int = d)
     for edge in sn_edges
         for j in 1:n
             @constraints(model, begin
-                +(y[edge[1], j] - y[edge[2], j]) <= r[edge, j]
-                -(y[edge[1], j] - y[edge[2], j]) <= r[edge, j]
+                +(y[edge[1], j] - y[edge[2], j]) <= z[edge, j]
+                -(y[edge[1], j] - y[edge[2], j]) <= z[edge, j]
             end)
         end
 
-        @constraint(model, ones(n)' * r[edge, :] <= 1)
+        @constraint(model, ones(n)' * z[edge, :] <= 1)
     end
 
     @objective(model, Max, 1 * y[sn[0][1], 1])
 
-    model, sn, y, r
+    model, sn, y, z
 end
 
-function compute_gap(d::Int, s::Int, l::Int = d)
-    model, sn, y, r = BCRSimplexGaps.simplex_instance(d, s, l)
-    # set_silent(model)
+function compute_gap(d::Int, s::Int, l::Int = d; verbose = true)
+    model, sn, y, z = BCRSimplexGaps.simplex_instance(d, s, l)
+    verbose || set_silent(model)
     optimize!(model)
     @assert MOI.get(model, MOI.TerminationStatus()) == MOI.OPTIMAL
     s_max = s * d / (d + 1)
@@ -84,7 +84,7 @@ function compute_gap(d::Int, s::Int, l::Int = d)
         model = model,
         sn    = sn,
         y     = y,
-        r     = r,
+        z     = z,
         s_max = s_max,
         s_opt = s_opt,
         gap   = s_max / s_opt,

@@ -101,13 +101,13 @@ using Test
 end
 
 @testset "simplex_instance" begin
-    model, sn, y, r = BCRSimplexGaps.simplex_instance(2, 2)
+    model, sn, y, z = BCRSimplexGaps.simplex_instance(2, 2)
 
     @test sn[0] == [[2, 0, 0], [1, 1, 0]]
     @test sn[1] == [[3, 0, 0], [2, 1, 0], [1, 1, 1]]
 
     @test size(y) == (5, 3)
-    @test size(r) == (4, 3)
+    @test size(z) == (4, 3)
 
     constraint_refs = BCRSimplexGaps.all_constraints(
         model;
@@ -142,13 +142,19 @@ end
 
     for edge in sn_edges
         for j in axes(y, 2)
-            @test string(constraint_refs[constraint_index + 0]) == "$(y[edge[1], j]) - $(y[edge[2], j]) - $(r[edge, j]) ≤ 0.0"
-            @test string(constraint_refs[constraint_index + 1]) == "-$(y[edge[1], j]) + $(y[edge[2], j]) - $(r[edge, j]) ≤ 0.0"
+            @test string(constraint_refs[constraint_index + 0]) == "$(y[edge[1], j]) - $(y[edge[2], j]) - $(z[edge, j]) ≤ 0.0"
+            @test string(constraint_refs[constraint_index + 1]) == "-$(y[edge[1], j]) + $(y[edge[2], j]) - $(z[edge, j]) ≤ 0.0"
             constraint_index += 2
         end
-        @test string(constraint_refs[constraint_index]) == "$(r[edge, 1]) + $(r[edge, 2]) + $(r[edge, 3]) ≤ 1.0"
+        @test string(constraint_refs[constraint_index]) == "$(z[edge, 1]) + $(z[edge, 2]) + $(z[edge, 3]) ≤ 1.0"
         constraint_index += 1
     end
 
     @test constraint_index == length(constraint_refs) + 1
+end
+
+@testset "simplex_gap" begin
+    result = BCRSimplexGaps.compute_gap(22, 23, 3; verbose = false)
+
+    @test result.gap == 1.200153037333363
 end
