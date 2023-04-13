@@ -25,7 +25,7 @@ jobs:
       - name: Run example script defined in README.md
         run: |
           using Pkg
-          Pkg.add("https://github.com/roberthree/BCRSimplexGaps.jl")
+          Pkg.add("https://github.com/roberthree/BCRSimplexGaps.jl.git")
 
           using BCRSimplexGaps
 
