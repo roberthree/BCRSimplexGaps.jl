@@ -15,7 +15,7 @@ The following script can be executed in native Julia and will optimize instances
 
 ```julia
 using Pkg
-Pgk.add("https://github.com/roberthree/BCRSimplexGaps.jl")
+Pkg.add(url = "https://github.com/roberthree/BCRSimplexGaps.jl.git")
 
 using BCRSimplexGaps
 
