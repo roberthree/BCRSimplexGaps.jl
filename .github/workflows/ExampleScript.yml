@@ -1,0 +1,34 @@
+name: ExampleScript
+description: Runs the example script defined in README.md
+jobs:
+  example:
+    name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - 'nightly'
+        os:
+          - ubuntu-latest
+        arch:
+          - x64
+          - x86
+    steps:
+      - uses: actions/checkout@v2
+      - uses: julia-actions/setup-julia@v1
+        with:
+          version: ${{ matrix.version }}
+          arch: ${{ matrix.arch }}
+      - uses: julia-actions/cache@v1
+      - uses: julia-actions/julia-buildpkg@v1
+      - run: |
+          using Pkg
+          Pgk.add("https://github.com/roberthree/BCRSimplexGaps.jl")
+
+          using BCRSimplexGaps
+
+          s, d, l = (23, 22, 3)
+          result = BCRSimplexGaps.compute_gap(s, d, l; verbose = false)
+
+          result.gap
