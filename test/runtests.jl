@@ -156,5 +156,5 @@ end
 @testset "simplex_gap" begin
     result = BCRSimplexGaps.compute_gap(22, 23, 3; verbose = false)
 
-    @test result.gap == 1.200153037333363
+    @test result.gap == (Int === Int64 ? 1.200153037333363 : 1.2001530373333638)
 end
