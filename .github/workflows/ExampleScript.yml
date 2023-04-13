@@ -1,5 +1,4 @@
 name: ExampleScript
-description: Runs the example script defined in README.md
 on: workflow_dispatch
 jobs:
   example:
