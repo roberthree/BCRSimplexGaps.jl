@@ -22,7 +22,8 @@ jobs:
           arch: ${{ matrix.arch }}
       - uses: julia-actions/cache@v1
       - uses: julia-actions/julia-buildpkg@v1
-      - run: |
+      - name: Run example script defined in README.md
+        run: |
           using Pkg
           Pgk.add("https://github.com/roberthree/BCRSimplexGaps.jl")
 
@@ -32,3 +33,4 @@ jobs:
           result = BCRSimplexGaps.compute_gap(s, d, l; verbose = false)
 
           result.gap
+        shell: julia {0}
