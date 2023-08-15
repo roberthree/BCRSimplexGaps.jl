@@ -7,7 +7,9 @@ import HiGHS
 function optimize_model!(model::JuMP.Model; verbose::Bool)
     verbose || JuMP.set_silent(model)
     JuMP.optimize!(model)
-    @assert JuMP.MOI.get(model, JuMP.MOI.TerminationStatus()) == JuMP.MOI.OPTIMAL
+    @assert JuMP.MOI.get(
+        model, JuMP.MOI.TerminationStatus(),
+    ) == JuMP.MOI.OPTIMAL
     (
         value = JuMP.MOI.get(model, JuMP.MOI.ObjectiveValue()),
         time  = JuMP.MOI.get(model, JuMP.MOI.SolveTimeSec()),
@@ -67,12 +69,16 @@ function construct_simplex_instance(d::Int, s::Int, l::Int = d)
 
         # v_i = v_j => y(v)_i = y(v)_j
         for k in unique(v)
-            # for each possible value k find all indices i such that v_i = k
+            # for each possible value k
+            # find all indices i such that v_i = k
             indices = findall(==(k), v)
             for i in indices[2:end]
                 # determine factor for correct equality
                 factor = i < l + 2 ? 1 : (d - l)
-                JuMP.@constraint(model, y[v, i] == factor * y[v, indices[1]])
+                JuMP.@constraint(
+                    model,
+                    y[v, i] == factor * y[v, indices[1]],
+                )
             end
         end
     end
@@ -94,18 +100,25 @@ function construct_simplex_instance(d::Int, s::Int, l::Int = d)
     SimplexInstance(s * d / (d + 1), model, sn, (y = y, z = z))
 end
 
-function compute_simplex_gap(simplex_instance::SimplexInstance; verbose::Bool = true)
+function compute_simplex_gap(
+    simplex_instance::SimplexInstance;
+    verbose::Bool = true,
+)
     result = optimize_model!(simplex_instance.model; verbose)
     (
-        max = simplex_instance.max_value,
-        opt = result.value,
         gap = simplex_instance.max_value / result.value,
         time = result.time,
     )
 end
 
-function compute_simplex_gap(d::Int, s::Int, l::Int = d; verbose::Bool = true)
-    compute_simplex_gap(construct_simplex_instance(d, s, l); verbose)
+function compute_simplex_gap(
+    d::Int, s::Int, l::Int = d;
+    verbose::Bool = true,
+)
+    compute_simplex_gap(
+        construct_simplex_instance(d, s, l);
+        verbose,
+    )
 end
 
 end
