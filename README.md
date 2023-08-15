@@ -18,8 +18,8 @@ Pkg.add(url = "https://github.com/roberthree/BCRSimplexGaps.jl.git")
 import BCRSimplexGaps
 
 d, s, l = (23, 22, 3)
-result = BCRSimplexGaps.compute_simplex_gap(d, s, l; verbose = false)
+result = BCRSimplexGaps.compute_simplex_gap(d, s, l; verbose = true)
 
-result.gap
+display(result)
 ```
 
